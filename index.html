@@ -4,128 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Network Address Quiz</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f7ff;
-            color: #333;
-        }
-        .quiz-container {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .address-display {
-            font-family: monospace;
-            font-size: 24px;
-            text-align: center;
-            padding: 15px;
-            margin: 20px 0;
-            background-color: #e9ecef;
-            border-radius: 6px;
-            word-break: break-all;
-        }
-        .options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        button {
-            cursor: pointer;
-            border: none;
-            border-radius: 6px;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-        .option {
-            background-color: #4b6bfb;
-            color: white;
-        }
-        .option:hover {
-            background-color: #3451d1;
-            transform: translateY(-2px);
-        }
-        .hint-btn {
-            background-color: #f0ad4e;
-            color: white;
-            width: 100%;
-            margin-top: 10px;
-        }
-        .hint-btn:hover {
-            background-color: #ec971f;
-        }
-        .next-btn {
-            background-color: #5cb85c;
-            color: white;
-            width: 100%;
-            margin-top: 15px;
-            display: none;
-        }
-        .next-btn:hover {
-            background-color: #449d44;
-        }
-        .feedback {
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 6px;
-            text-align: center;
-            font-weight: bold;
-            display: none;
-        }
-        .correct {
-            background-color: #dff0d8;
-            color: #3c763d;
-        }
-        .incorrect {
-            background-color: #f2dede;
-            color: #a94442;
-        }
-        .streak {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        .hint-panel {
-            background-color: #fcf8e3;
-            border-left: 5px solid #f0ad4e;
-            padding: 15px;
-            margin: 15px 0;
-            display: none;
-            border-radius: 4px;
-        }
-        .hint-panel h3 {
-            margin-top: 0;
-            color: #8a6d3b;
-        }
-        .hint-panel ul {
-            padding-left: 20px;
-        }
-        .hint-panel li {
-            margin: 8px 0;
-        }
-        .disabled {
-            pointer-events: none;
-            opacity: 0.7;
-        }
-        .correct-option {
-            background-color: #5cb85c !important;
-        }
-        .wrong-option {
-            background-color: #d9534f !important;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="quiz-container">
@@ -137,13 +16,6 @@
             Loading question...
         </div>
         
-        <div class="options" id="options">
-            <button class="option" data-type="IPv4">IPv4</button>
-            <button class="option" data-type="IPv6">IPv6</button>
-            <button class="option" data-type="MAC">MAC</button>
-            <button class="option" data-type="none">None</button>
-        </div>
-        
         <button class="hint-btn" id="hint-btn">Show Hint</button>
         
         <div class="hint-panel" id="hint-panel">
@@ -151,15 +23,23 @@
             <ul>
                 <li><strong>IPv4:</strong> 4 decimal numbers (0-255) separated by dots<br>
                     Example: 192.168.1.1</li>
-                <li><strong>IPv6:</strong> 8 groups of 4 hex digits separated by colons. Groups can be empty.<br>
-                    Example: 2001:0db8:85a3:0000:0000:8a2e:0370:7334</li>
+                <li><strong>IPv6:</strong> 8 groups of 4 hex digits separated by colons. Groups can be empty or compressed.<br>
+                    Example: 2001:0db8:85a3:0000:0000:8a2e:0370:7334<br>
+                    Compressed: 2001:db8::8a2e:370:7334</li>
                 <li><strong>MAC:</strong> 6 pairs of hex digits separated by colons or dashes<br>
-                    Example: 00:1A:2B:3C:4D:5E</li>
+                    Example: 00:1A:2B:3C:4D:5E or 00-1A-2B-3C-4D-5E</li>
             </ul>
         </div>
         
+        <div class="options" id="options">
+            <button class="option" data-type="IPv4">IPv4</button>
+            <button class="option" data-type="IPv6">IPv6</button>
+            <button class="option" data-type="MAC">MAC</button>
+            <button class="option" data-type="none">None</button>
+        </div>
+        
         <div class="feedback correct" id="feedback-correct">
-            Correct! That's a <span id="correct-type"></span> address.
+            Correct! <span id="correct-type"></span>.
         </div>
         
         <div class="feedback incorrect" id="feedback-incorrect">
@@ -169,188 +49,6 @@
         <button class="next-btn" id="next-btn">Next Question</button>
     </div>
 
-    <script>
-        // Simplified quiz logic with error handling
-        const addressDisplay = document.getElementById('address-display');
-        const optionsContainer = document.getElementById('options');
-        const optionButtons = document.querySelectorAll('.option');
-        const hintBtn = document.getElementById('hint-btn');
-        const hintPanel = document.getElementById('hint-panel');
-        const feedbackCorrect = document.getElementById('feedback-correct');
-        const feedbackIncorrect = document.getElementById('feedback-incorrect');
-        const correctType = document.getElementById('correct-type');
-        const actualType = document.getElementById('actual-type');
-        const nextBtn = document.getElementById('next-btn');
-        const streakCount = document.getElementById('streak-count');
-        const streakDucks = document.getElementById('streak-ducks');
-
-        let currentAddress = '';
-        let currentType = '';
-        let streak = 0;
-
-        // Basic address generation functions
-        function generateIPv4() {
-            return Array.from({length: 4}, () => Math.floor(Math.random() * 256)).join('.');
-        }
-
-        function generateIPv6() {
-            return Array.from({length: 8}, () => 
-                Math.floor(Math.random() * 65536).toString(16).padStart(4, '0')
-            ).join(':');
-        }
-
-        function generateMAC() {
-            return Array.from({length: 6}, () => 
-                Math.floor(Math.random() * 256).toString(16).padStart(2, '0').toUpperCase()
-            ).join(':');
-        }
-
-        function generateInvalidAddress() {
-            const invalidTypes = [
-                () => Array.from({length: 5}, () => Math.floor(Math.random() * 256)).join('.'),
-                () => Array.from({length: 9}, () => 
-                    Math.floor(Math.random() * 65536).toString(16).padStart(4, '0')
-                ).join(':'),
-                () => Array.from({length: 7}, () => 
-                    Math.floor(Math.random() * 256).toString(16).padStart(2, '0')
-                ).join(':')
-            ];
-            return invalidTypes[Math.floor(Math.random() * invalidTypes.length)]();
-        }
-
-        function generateRandomAddress() {
-            const types = ['IPv4', 'IPv6', 'MAC', 'none'];
-            const randomType = types[Math.floor(Math.random() * types.length)];
-            
-            let address;
-            switch (randomType) {
-                case 'IPv4':
-                    address = generateIPv4();
-                    break;
-                case 'IPv6':
-                    address = generateIPv6();
-                    break;
-                case 'MAC':
-                    address = generateMAC();
-                    break;
-                case 'none':
-                    address = generateInvalidAddress();
-                    break;
-            }
-            
-            return { address, type: randomType };
-        }
-
-        function updateStreakDisplay() {
-            streakCount.textContent = streak;
-            streakDucks.textContent = '🐤'.repeat(streak);
-        }
-
-        function showNextQuestion() {
-            try {
-                // Reset UI
-                optionButtons.forEach(button => {
-                    button.classList.remove('disabled', 'correct-option', 'wrong-option');
-                });
-                
-                feedbackCorrect.style.display = 'none';
-                feedbackIncorrect.style.display = 'none';
-                hintPanel.style.display = 'none';
-                nextBtn.style.display = 'none';
-                
-                // Generate new address
-                const { address, type } = generateRandomAddress();
-                currentAddress = address;
-                currentType = type;
-                
-                // Update display
-                if (addressDisplay) {
-                    addressDisplay.textContent = currentAddress;
-                } else {
-                    console.error('Address display element not found');
-                }
-            } catch (error) {
-                console.error('Error generating question:', error);
-                addressDisplay.textContent = 'Error generating question';
-            }
-        }
-
-        // Event listeners
-        optionsContainer.addEventListener('click', function(event) {
-            if (!event.target.classList.contains('option')) return;
-            if (event.target.classList.contains('disabled')) return;
-            
-            const selectedType = event.target.dataset.type;
-            
-            // Disable all options
-            optionButtons.forEach(button => {
-                button.classList.add('disabled');
-            });
-            
-            // Show correct option
-            document.querySelector(`[data-type="${currentType}"]`).classList.add('correct-option');
-            
-            // If selected option is wrong, highlight it
-            if (selectedType !== currentType) {
-                event.target.classList.add('wrong-option');
-            }
-            
-            // Update feedback
-            if (selectedType === currentType) {
-                // Correct answer
-                feedbackCorrect.style.display = 'block';
-                
-                if (currentType === 'none') {
-                    correctType.textContent = 'not a valid IP or MAC';
-                } else {
-                    correctType.textContent = currentType;
-                }
-                
-                streak++;
-                updateStreakDisplay();
-            } else {
-                // Wrong answer
-                feedbackIncorrect.style.display = 'block';
-                
-                if (currentType === 'none') {
-                    actualType.textContent = 'This is not a valid IP or MAC address';
-                } else {
-                    actualType.textContent = 'This is a ' + currentType + ' address';
-                }
-                
-                streak = 0;
-                updateStreakDisplay();
-            }
-            
-            // Show next button
-            nextBtn.style.display = 'block';
-        });
-
-        hintBtn.addEventListener('click', function() {
-            hintPanel.style.display = hintPanel.style.display === 'none' ? 'block' : 'none';
-        });
-
-        nextBtn.addEventListener('click', showNextQuestion);
-
-        // Immediate initialization
-        window.onload = function() {
-            console.log('Window loaded, initializing quiz');
-            showNextQuestion();
-            updateStreakDisplay();
-        };
-
-        // Fallback initialization
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-                console.log('DOM content loaded, initializing quiz');
-                showNextQuestion();
-                updateStreakDisplay();
-            });
-        } else {
-            console.log('Document already loaded, initializing quiz');
-            showNextQuestion();
-            updateStreakDisplay();
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
