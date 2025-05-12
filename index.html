@@ -163,7 +163,7 @@
         </div>
         
         <div class="feedback incorrect" id="feedback-incorrect">
-            Incorrect! This is a <span id="actual-type"></span> address.
+            Incorrect! <span id="actual-type"></span>
         </div>
         
         <button class="next-btn" id="next-btn">Next Question</button>
@@ -187,6 +187,7 @@
         // Game state
         let currentAddress = '';
         let currentType = '';
+        let currentReason = '';
         let streak = 0;
         
         // Generate a random IPv4 address
@@ -470,9 +471,10 @@
             nextBtn.style.display = 'none';
             
             // Generate new address
-            const { address, type } = generateRandomAddress();
+            const { address, type, reason } = generateRandomAddress();
             currentAddress = address;
             currentType = type;
+            currentReason = reason || '';
             
             // Update display
             addressDisplay.textContent = address;
@@ -502,13 +504,25 @@
             if (selectedType === currentType) {
                 // Correct answer
                 feedbackCorrect.style.display = 'block';
-                correctType.textContent = currentType;
+                
+                if (currentType === 'none') {
+                    correctType.textContent = 'not a valid IP or MAC';
+                } else {
+                    correctType.textContent = currentType;
+                }
+                
                 streak++;
                 updateStreakDisplay();
             } else {
                 // Wrong answer
                 feedbackIncorrect.style.display = 'block';
-                actualType.textContent = currentType;
+                
+                if (currentType === 'none') {
+                    actualType.textContent = 'This is not a valid IP or MAC address - ' + currentReason;
+                } else {
+                    actualType.textContent = 'This is a ' + currentType + ' address';
+                }
+                
                 streak = 0;
                 updateStreakDisplay();
             }
