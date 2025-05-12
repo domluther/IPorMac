@@ -151,7 +151,7 @@
             <ul>
                 <li><strong>IPv4:</strong> 4 decimal numbers (0-255) separated by dots<br>
                     Example: 192.168.1.1</li>
-                <li><strong>IPv6:</strong> 8 groups of up to 4 hex digits separated by colons. Groups can be empty.<br>
+                <li><strong>IPv6:</strong> 8 groups of 4 hex digits separated by colons. Groups can be empty.<br>
                     Example: 2001:0db8:85a3:0000:0000:8a2e:0370:7334</li>
                 <li><strong>MAC:</strong> 6 pairs of hex digits separated by colons or dashes<br>
                     Example: 00:1A:2B:3C:4D:5E</li>
@@ -203,6 +203,7 @@
         function generateIPv6() {
             const segments = [];
             for (let i = 0; i < 8; i++) {
+                // Ensure each segment is EXACTLY 4 hex digits
                 const segment = Math.floor(Math.random() * 65536).toString(16).padStart(4, '0');
                 segments.push(segment);
             }
@@ -265,7 +266,7 @@
         function generateMAC() {
             const segments = [];
             for (let i = 0; i < 6; i++) {
-                const segment = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
+                const segment = Math.floor(Math.random() * 256).toString(16).padStart(2, '0').toUpperCase();
                 segments.push(segment);
             }
             
@@ -390,158 +391,3 @@
                                 const segment = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
                                 segments.push(segment);
                             }
-                            // Make one segment too long
-                            const invalidIndex = Math.floor(Math.random() * 6);
-                            segments[invalidIndex] = 'abc';
-                            return segments.join(':');
-                        },
-                        () => { // Invalid characters
-                            const segments = [];
-                            for (let i = 0; i < 6; i++) {
-                                const segment = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-                                segments.push(segment);
-                            }
-                            // Make one segment have invalid chars
-                            const invalidIndex = Math.floor(Math.random() * 6);
-                            segments[invalidIndex] = 'gz';
-                            return segments.join(':');
-                        },
-                        () => { // Wrong separator
-                            const segments = [];
-                            for (let i = 0; i < 6; i++) {
-                                const segment = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-                                segments.push(segment);
-                            }
-                            return segments.join('.');
-                        },
-                        () => { // Mixed separators
-                            const segments = [];
-                            for (let i = 0; i < 6; i++) {
-                                const segment = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-                                segments.push(segment);
-                            }
-                            return `${segments[0]}:${segments[1]}-${segments[2]}:${segments[3]}-${segments[4]}:${segments[5]}`;
-                        }
-                    ];
-                    
-                    return invalidMACTypes[Math.floor(Math.random() * invalidMACTypes.length)]();
-            }
-        }
-        
-        // Generate a random address of any type
-        function generateRandomAddress() {
-            const types = ['IPv4', 'IPv6', 'MAC', 'none'];
-            const randomType = types[Math.floor(Math.random() * types.length)];
-            
-            let address;
-            switch (randomType) {
-                case 'IPv4':
-                    address = generateIPv4();
-                    break;
-                case 'IPv6':
-                    address = generateIPv6();
-                    break;
-                case 'MAC':
-                    address = generateMAC();
-                    break;
-                case 'none':
-                    address = generateInvalidAddress();
-                    break;
-            }
-            
-            return { address, type: randomType };
-        }
-        
-        // Update the duck streak display
-        function updateStreakDisplay() {
-            streakCount.textContent = streak;
-            streakDucks.textContent = '🐤'.repeat(streak);
-        }
-        
-        // Show the next question
-        function showNextQuestion() {
-            // Reset UI
-            optionButtons.forEach(button => {
-                button.classList.remove('disabled', 'correct-option', 'wrong-option');
-            });
-            
-            feedbackCorrect.style.display = 'none';
-            feedbackIncorrect.style.display = 'none';
-            hintPanel.style.display = 'none';
-            nextBtn.style.display = 'none';
-            
-            // Generate new address
-            const { address, type, reason } = generateRandomAddress();
-            currentAddress = address;
-            currentType = type;
-            currentReason = reason || '';
-            
-            // Update display
-            addressDisplay.textContent = address;
-        }
-        
-        // Handle option button clicks
-        optionsContainer.addEventListener('click', function(event) {
-            if (!event.target.classList.contains('option')) return;
-            if (event.target.classList.contains('disabled')) return;
-            
-            const selectedType = event.target.dataset.type;
-            
-            // Disable all options
-            optionButtons.forEach(button => {
-                button.classList.add('disabled');
-            });
-            
-            // Show correct option
-            document.querySelector(`[data-type="${currentType}"]`).classList.add('correct-option');
-            
-            // If selected option is wrong, highlight it
-            if (selectedType !== currentType) {
-                event.target.classList.add('wrong-option');
-            }
-            
-            // Update feedback
-            if (selectedType === currentType) {
-                // Correct answer
-                feedbackCorrect.style.display = 'block';
-                
-                if (currentType === 'none') {
-                    correctType.textContent = 'not a valid IP or MAC';
-                } else {
-                    correctType.textContent = currentType;
-                }
-                
-                streak++;
-                updateStreakDisplay();
-            } else {
-                // Wrong answer
-                feedbackIncorrect.style.display = 'block';
-                
-                if (currentType === 'none') {
-                    actualType.textContent = 'This is not a valid IP or MAC address - ' + currentReason;
-                } else {
-                    actualType.textContent = 'This is a ' + currentType + ' address';
-                }
-                
-                streak = 0;
-                updateStreakDisplay();
-            }
-            
-            // Show next button
-            nextBtn.style.display = 'block';
-        });
-        
-        // Handle hint button
-        hintBtn.addEventListener('click', function() {
-            hintPanel.style.display = hintPanel.style.display === 'none' ? 'block' : 'none';
-        });
-        
-        // Handle next button
-        nextBtn.addEventListener('click', showNextQuestion);
-        
-        // Start the quiz
-        showNextQuestion();
-        updateStreakDisplay();
-    </script>
-</body>
-</html>
