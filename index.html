@@ -429,18 +429,18 @@
         
         // Generate a random address of any type
         function generateRandomAddress() {
-            const types = ['ipv4', 'ipv6', 'mac', 'none'];
+            const types = ['IPv4', 'IPv6', 'MAC', 'none'];
             const randomType = types[Math.floor(Math.random() * types.length)];
             
             let address;
             switch (randomType) {
-                case 'ipv4':
+                case 'IPv4':
                     address = generateIPv4();
                     break;
-                case 'ipv6':
+                case 'IPv6':
                     address = generateIPv6();
                     break;
-                case 'mac':
+                case 'MAC':
                     address = generateMAC();
                     break;
                 case 'none':
