@@ -170,7 +170,7 @@
     </div>
 
     <script>
-        // DOM elements
+        // Simplified quiz logic with error handling
         const addressDisplay = document.getElementById('address-display');
         const optionsContainer = document.getElementById('options');
         const optionButtons = document.querySelectorAll('.option');
@@ -184,212 +184,173 @@
         const streakCount = document.getElementById('streak-count');
         const streakDucks = document.getElementById('streak-ducks');
 
-        // Game state
         let currentAddress = '';
         let currentType = '';
-        let currentReason = '';
         let streak = 0;
-        
-        // Generate a random IPv4 address
+
+        // Basic address generation functions
         function generateIPv4() {
-            const segments = [];
-            for (let i = 0; i < 4; i++) {
-                segments.push(Math.floor(Math.random() * 256));
-            }
-            return segments.join('.');
+            return Array.from({length: 4}, () => Math.floor(Math.random() * 256)).join('.');
         }
-        
-        // Generate a random IPv6 address
+
         function generateIPv6() {
-            const segments = [];
-            for (let i = 0; i < 8; i++) {
-                // Ensure each segment is EXACTLY 4 hex digits
-                const segment = Math.floor(Math.random() * 65536).toString(16).padStart(4, '0');
-                segments.push(segment);
-            }
-            
-            // Randomly create shortened version (with ::) about 30% of the time
-            if (Math.random() < 0.3) {
-                // Find a sequence of zeros to replace with ::
-                let zeroStart = -1;
-                let maxZeroStart = -1;
-                let maxZeroLength = 0;
-                let currentZeroLength = 0;
-                
-                for (let i = 0; i < segments.length; i++) {
-                    if (segments[i] === '0000') {
-                        if (currentZeroLength === 0) {
-                            zeroStart = i;
-                        }
-                        currentZeroLength++;
-                    } else {
-                        if (currentZeroLength > maxZeroLength) {
-                            maxZeroLength = currentZeroLength;
-                            maxZeroStart = zeroStart;
-                        }
-                        currentZeroLength = 0;
-                    }
-                }
-                
-                // Check last sequence
-                if (currentZeroLength > maxZeroLength) {
-                    maxZeroLength = currentZeroLength;
-                    maxZeroStart = zeroStart;
-                }
-                
-                // Replace if we found a sequence of at least 2 zeros
-                if (maxZeroLength >= 2) {
-                    const firstPart = segments.slice(0, maxZeroStart);
-                    const secondPart = segments.slice(maxZeroStart + maxZeroLength);
-                    
-                    if (firstPart.length === 0 && secondPart.length === 0) {
-                        return '::';
-                    } else if (firstPart.length === 0) {
-                        return '::' + secondPart.join(':');
-                    } else if (secondPart.length === 0) {
-                        return firstPart.join(':') + '::';
-                    } else {
-                        return firstPart.join(':') + '::' + secondPart.join(':');
-                    }
-                }
-            }
-            
-            // Randomly make some segments shorter by removing leading zeros about 50% of the time
-            if (Math.random() < 0.5) {
-                return segments.map(seg => seg.replace(/^0+(?=.)/, '')).join(':');
-            }
-            
-            return segments.join(':');
+            return Array.from({length: 8}, () => 
+                Math.floor(Math.random() * 65536).toString(16).padStart(4, '0')
+            ).join(':');
         }
-        
-        // Generate a random MAC address
+
         function generateMAC() {
-            const segments = [];
-            for (let i = 0; i < 6; i++) {
-                const segment = Math.floor(Math.random() * 256).toString(16).padStart(2, '0').toUpperCase();
-                segments.push(segment);
+            return Array.from({length: 6}, () => 
+                Math.floor(Math.random() * 256).toString(16).padStart(2, '0').toUpperCase()
+            ).join(':');
+        }
+
+        function generateInvalidAddress() {
+            const invalidTypes = [
+                () => Array.from({length: 5}, () => Math.floor(Math.random() * 256)).join('.'),
+                () => Array.from({length: 9}, () => 
+                    Math.floor(Math.random() * 65536).toString(16).padStart(4, '0')
+                ).join(':'),
+                () => Array.from({length: 7}, () => 
+                    Math.floor(Math.random() * 256).toString(16).padStart(2, '0')
+                ).join(':')
+            ];
+            return invalidTypes[Math.floor(Math.random() * invalidTypes.length)]();
+        }
+
+        function generateRandomAddress() {
+            const types = ['IPv4', 'IPv6', 'MAC', 'none'];
+            const randomType = types[Math.floor(Math.random() * types.length)];
+            
+            let address;
+            switch (randomType) {
+                case 'IPv4':
+                    address = generateIPv4();
+                    break;
+                case 'IPv6':
+                    address = generateIPv6();
+                    break;
+                case 'MAC':
+                    address = generateMAC();
+                    break;
+                case 'none':
+                    address = generateInvalidAddress();
+                    break;
             }
             
-            // Use either colons or dashes
-            const separator = Math.random() < 0.5 ? ':' : '-';
-            return segments.join(separator);
+            return { address, type: randomType };
         }
-        
-        // Generate an invalid address
-        function generateInvalidAddress() {
-            const type = Math.floor(Math.random() * 3);
+
+        function updateStreakDisplay() {
+            streakCount.textContent = streak;
+            streakDucks.textContent = '🐤'.repeat(streak);
+        }
+
+        function showNextQuestion() {
+            try {
+                // Reset UI
+                optionButtons.forEach(button => {
+                    button.classList.remove('disabled', 'correct-option', 'wrong-option');
+                });
+                
+                feedbackCorrect.style.display = 'none';
+                feedbackIncorrect.style.display = 'none';
+                hintPanel.style.display = 'none';
+                nextBtn.style.display = 'none';
+                
+                // Generate new address
+                const { address, type } = generateRandomAddress();
+                currentAddress = address;
+                currentType = type;
+                
+                // Update display
+                if (addressDisplay) {
+                    addressDisplay.textContent = currentAddress;
+                } else {
+                    console.error('Address display element not found');
+                }
+            } catch (error) {
+                console.error('Error generating question:', error);
+                addressDisplay.textContent = 'Error generating question';
+            }
+        }
+
+        // Event listeners
+        optionsContainer.addEventListener('click', function(event) {
+            if (!event.target.classList.contains('option')) return;
+            if (event.target.classList.contains('disabled')) return;
             
-            switch (type) {
-                case 0: // Invalid IPv4
-                    const invalidIPv4Types = [
-                        () => { // Too many segments
-                            const segments = [];
-                            for (let i = 0; i < 5; i++) {
-                                segments.push(Math.floor(Math.random() * 256));
-                            }
-                            return segments.join('.');
-                        },
-                        () => { // Number too large
-                            const segments = [];
-                            for (let i = 0; i < 4; i++) {
-                                segments.push(Math.floor(Math.random() * 256));
-                            }
-                            // Make one segment invalid
-                            const invalidIndex = Math.floor(Math.random() * 4);
-                            segments[invalidIndex] = 256 + Math.floor(Math.random() * 200);
-                            return segments.join('.');
-                        },
-                        () => { // Letters in segments
-                            const segments = [];
-                            for (let i = 0; i < 4; i++) {
-                                segments.push(Math.floor(Math.random() * 256));
-                            }
-                            // Make one segment contain letters
-                            const invalidIndex = Math.floor(Math.random() * 4);
-                            segments[invalidIndex] = 'abc';
-                            return segments.join('.');
-                        },
-                        () => { // Wrong separator
-                            const segments = [];
-                            for (let i = 0; i < 4; i++) {
-                                segments.push(Math.floor(Math.random() * 256));
-                            }
-                            return segments.join('/');
-                        }
-                    ];
-                    
-                    return invalidIPv4Types[Math.floor(Math.random() * invalidIPv4Types.length)]();
-                    
-                case 1: // Invalid IPv6
-                    const invalidIPv6Types = [
-                        () => { // Too many segments
-                            const segments = [];
-                            for (let i = 0; i < 9; i++) {
-                                const segment = Math.floor(Math.random() * 65536).toString(16).padStart(4, '0');
-                                segments.push(segment);
-                            }
-                            return segments.join(':');
-                        },
-                        () => { // Segment too long
-                            const segments = [];
-                            for (let i = 0; i < 8; i++) {
-                                const segment = Math.floor(Math.random() * 65536).toString(16).padStart(4, '0');
-                                segments.push(segment);
-                            }
-                            // Make one segment too long
-                            const invalidIndex = Math.floor(Math.random() * 8);
-                            segments[invalidIndex] = 'abcde';
-                            return segments.join(':');
-                        },
-                        () => { // Invalid characters
-                            const segments = [];
-                            for (let i = 0; i < 8; i++) {
-                                const segment = Math.floor(Math.random() * 65536).toString(16).padStart(4, '0');
-                                segments.push(segment);
-                            }
-                            // Make one segment have invalid chars
-                            const invalidIndex = Math.floor(Math.random() * 8);
-                            segments[invalidIndex] = 'g12z';
-                            return segments.join(':');
-                        },
-                        () => { // Wrong separator
-                            const segments = [];
-                            for (let i = 0; i < 8; i++) {
-                                const segment = Math.floor(Math.random() * 65536).toString(16).padStart(4, '0');
-                                segments.push(segment);
-                            }
-                            return segments.join('.');
-                        },
-                        () => { // Multiple :: sequences
-                            return '2001::85a3::8a2e';
-                        }
-                    ];
-                    
-                    return invalidIPv6Types[Math.floor(Math.random() * invalidIPv6Types.length)]();
-                    
-                case 2: // Invalid MAC
-                    const invalidMACTypes = [
-                        () => { // Too many segments
-                            const segments = [];
-                            for (let i = 0; i < 7; i++) {
-                                const segment = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-                                segments.push(segment);
-                            }
-                            return segments.join(':');
-                        },
-                        () => { // Too few segments
-                            const segments = [];
-                            for (let i = 0; i < 5; i++) {
-                                const segment = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-                                segments.push(segment);
-                            }
-                            return segments.join(':');
-                        },
-                        () => { // Segment too long
-                            const segments = [];
-                            for (let i = 0; i < 6; i++) {
-                                const segment = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-                                segments.push(segment);
-                            }
-                            // Make one segment too long
-                            const invalidIndex = Math.floor(Math.random()
+            const selectedType = event.target.dataset.type;
+            
+            // Disable all options
+            optionButtons.forEach(button => {
+                button.classList.add('disabled');
+            });
+            
+            // Show correct option
+            document.querySelector(`[data-type="${currentType}"]`).classList.add('correct-option');
+            
+            // If selected option is wrong, highlight it
+            if (selectedType !== currentType) {
+                event.target.classList.add('wrong-option');
+            }
+            
+            // Update feedback
+            if (selectedType === currentType) {
+                // Correct answer
+                feedbackCorrect.style.display = 'block';
+                
+                if (currentType === 'none') {
+                    correctType.textContent = 'not a valid IP or MAC';
+                } else {
+                    correctType.textContent = currentType;
+                }
+                
+                streak++;
+                updateStreakDisplay();
+            } else {
+                // Wrong answer
+                feedbackIncorrect.style.display = 'block';
+                
+                if (currentType === 'none') {
+                    actualType.textContent = 'This is not a valid IP or MAC address';
+                } else {
+                    actualType.textContent = 'This is a ' + currentType + ' address';
+                }
+                
+                streak = 0;
+                updateStreakDisplay();
+            }
+            
+            // Show next button
+            nextBtn.style.display = 'block';
+        });
+
+        hintBtn.addEventListener('click', function() {
+            hintPanel.style.display = hintPanel.style.display === 'none' ? 'block' : 'none';
+        });
+
+        nextBtn.addEventListener('click', showNextQuestion);
+
+        // Immediate initialization
+        window.onload = function() {
+            console.log('Window loaded, initializing quiz');
+            showNextQuestion();
+            updateStreakDisplay();
+        };
+
+        // Fallback initialization
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('DOM content loaded, initializing quiz');
+                showNextQuestion();
+                updateStreakDisplay();
+            });
+        } else {
+            console.log('Document already loaded, initializing quiz');
+            showNextQuestion();
+            updateStreakDisplay();
+        }
+    </script>
+</body>
+</html>
