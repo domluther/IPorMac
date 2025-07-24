@@ -1,35 +1,23 @@
-// DOM Elements - Will be initialized after DOM loads
-let addressDisplay, optionsContainer, optionButtons, hintBtn, hintPanel;
-let feedbackCorrect, feedbackIncorrect, correctType, actualType, nextBtn;
-let streakCount, streakDucks;
+// DOM Elements
+const addressDisplay = document.getElementById("address-display");
+const optionsContainer = document.getElementById("options");
+const optionButtons = document.querySelectorAll(".option");
+const hintBtn = document.getElementById("hint-btn");
+const hintPanel = document.getElementById("hint-panel");
+const feedbackCorrect = document.getElementById("feedback-correct");
+const feedbackIncorrect = document.getElementById("feedback-incorrect");
+const correctType = document.getElementById("correct-type");
+const actualType = document.getElementById("actual-type");
+const nextBtn = document.getElementById("next-btn");
+const streakCount = document.getElementById("streak-count");
+const streakDucks = document.getElementById("streak-ducks");
 
 // Game state
 let currentAddress = "";
 let currentType = "";
 let currentInvalidType = "";
 let currentInvalidReason = "";
-// Streak is now managed by scoreManager, not as a local variable
-
-// Initialize DOM elements
-function initializeDOMElements() {
-    addressDisplay = document.getElementById("address-display");
-    optionsContainer = document.getElementById("options");
-    optionButtons = document.querySelectorAll(".option");
-    hintBtn = document.getElementById("hint-btn");
-    hintPanel = document.getElementById("hint-panel");
-    feedbackCorrect = document.getElementById("feedback-correct");
-    feedbackIncorrect = document.getElementById("feedback-incorrect");
-    correctType = document.getElementById("correct-type");
-    actualType = document.getElementById("actual-type");
-    nextBtn = document.getElementById("next-btn");
-    streakCount = document.getElementById("streak-count");
-    streakDucks = document.getElementById("streak-ducks");
-    
-    // Add event listeners
-    if (optionsContainer) optionsContainer.addEventListener("click", handleOptionClick);
-    if (hintBtn) hintBtn.addEventListener("click", toggleHintPanel);
-    if (nextBtn) nextBtn.addEventListener("click", showNextQuestion);
-}
+let streak = 0;
 
 // Address generation functions
 function generateIPv4() {
@@ -137,7 +125,7 @@ function generateInvalidAddress() {
 				return segments.join(".");
 			},
 			invalidType: "IPv4",
-			reason: "contains a negative number",
+			reason: "contains negative number",
 		},
 
 		// IPv4 with letter characters mixed in
@@ -335,51 +323,21 @@ function generateRandomAddress() {
 }
 
 function updateStreakDisplay() {
-	const currentStreak = window.scoreManager ? window.scoreManager.getStreak() : 0;
-	if (streakCount) streakCount.textContent = currentStreak;
-	if (streakDucks) streakDucks.textContent = formatStreakEmojis(currentStreak);
-}
-
-function formatStreakEmojis(streak) {
-	if (streak === 0) return '';
-	
-	// Bird emoji "denominations" inspired by the level system
-	const denominations = [
-		{ value: 50, emoji: '🪿' },  // Golden Goose for 50s
-		{ value: 25, emoji: '🦅' },  // Eagle for 25s  
-		{ value: 10, emoji: '🦢' },  // Swan for 10s
-		{ value: 5, emoji: '🦆' },   // Duck for 5s
-		{ value: 1, emoji: '🐤' }    // Duckling for 1s
-	];
-	
-	let result = '';
-	let remaining = streak;
-	
-	for (const { value, emoji } of denominations) {
-		const count = Math.floor(remaining / value);
-		if (count > 0) {
-			result += emoji.repeat(count);
-			remaining -= count * value;
-		}
-	}
-	
-	return result;
+	streakCount.textContent = streak;
+	streakDucks.textContent = "🐤".repeat(streak);
 }
 
 function showNextQuestion() {
 	try {
-		// Re-get option buttons to ensure we have the latest set
-		optionButtons = document.querySelectorAll(".option");
-		
 		// Reset UI
 		optionButtons.forEach((button) => {
 			button.classList.remove("disabled", "correct-option", "wrong-option");
 		});
 
-		if (feedbackCorrect) feedbackCorrect.style.display = "none";
-		if (feedbackIncorrect) feedbackIncorrect.style.display = "none";
-		if (hintPanel) hintPanel.classList.remove('show');
-		if (nextBtn) nextBtn.style.display = "none";
+		feedbackCorrect.style.display = "none";
+		feedbackIncorrect.style.display = "none";
+		hintPanel.classList.remove('show');
+		nextBtn.style.display = "none";
 
 		// Generate new address
 		const { address, type, invalidType, invalidReason } =
@@ -397,7 +355,7 @@ function showNextQuestion() {
 		}
 	} catch (error) {
 		console.error("Error generating question:", error);
-		if (addressDisplay) addressDisplay.textContent = "Error generating question";
+		addressDisplay.textContent = "Error generating question";
 	}
 }
 
@@ -409,21 +367,17 @@ function handleOptionClick(event) {
 	const selectedType = event.target.dataset.type;
 	const isCorrect = selectedType === currentType;
 
-	// Record score and update streak if scoreManager is available
-	try {
-		if (window.scoreManager) {
-			window.scoreManager.recordScore('network-address-quiz', isCorrect ? 1 : 0, 1, currentType);
-			// Update streak using score manager
-			window.scoreManager.updateStreak(isCorrect);
-			// Update score button display using the built-in method
-			window.scoreManager.updateScoreButton();
+	// Record score if scoreManager is available
+	if (window.scoreManager) {
+		window.scoreManager.recordScore('network-address-quiz', isCorrect ? 1 : 0, 1);
+		// Update score button display
+		const scoreButton = document.getElementById('scoreButton');
+		if (scoreButton) {
+			const stats = window.scoreManager.getOverallStats();
+			const percentage = stats.totalQuestions > 0 ? Math.round((stats.totalCorrect / stats.totalQuestions) * 100) : 0;
+			scoreButton.textContent = `📊 Scores (${percentage}%)`;
 		}
-	} catch (error) {
-		console.warn('Error updating score:', error);
 	}
-
-	// Re-get option buttons to ensure we have the latest set
-	optionButtons = document.querySelectorAll(".option");
 
 	// Disable all options
 	optionButtons.forEach((button) => {
@@ -431,10 +385,9 @@ function handleOptionClick(event) {
 	});
 
 	// Show correct option
-	const correctButton = document.querySelector(`[data-type="${currentType}"]`);
-	if (correctButton) {
-		correctButton.classList.add("correct-option");
-	}
+	document
+		.querySelector(`[data-type="${currentType}"]`)
+		.classList.add("correct-option");
 
 	// If selected option is wrong, highlight it
 	if (selectedType !== currentType) {
@@ -444,51 +397,50 @@ function handleOptionClick(event) {
 	// Update feedback
 	if (selectedType === currentType) {
 		// Correct answer
-		if (feedbackCorrect) {
-			feedbackCorrect.style.display = "block";
-			
-			const article = currentType === "MAC" ? "a" : "an";
-			if (currentType === "none") {
-				// Show specific information about why the address is invalid
-				if (currentInvalidType && currentInvalidReason) {
-					if (correctType) correctType.textContent = ` This is an invalid ${currentInvalidType} address. It ${currentInvalidReason}`;
-				} else {
-					if (correctType) correctType.textContent = " This is not a valid IP or MAC address";
-				}
+		feedbackCorrect.style.display = "block";
+
+		const article = currentType === "MAC" ? "a" : "an";
+		if (currentType === "none") {
+			// Show specific information about why the address is invalid
+			if (currentInvalidType && currentInvalidReason) {
+				correctType.textContent = ` This is an invalid ${currentInvalidType} address. It ${currentInvalidReason}`;
 			} else {
-				if (correctType) correctType.textContent = `This is ${article} ${currentType} address`;
+				correctType.textContent = " This is not a valid IP or MAC address";
 			}
+		} else {
+			correctType.textContent = `This is ${article} ${currentType} address`;
 		}
+
+		streak++;
 
 		updateStreakDisplay();
 	} else {
 		// Wrong answer
-		if (feedbackIncorrect) {
-			feedbackIncorrect.style.display = "block";
+		feedbackIncorrect.style.display = "block";
 
-			const article = currentType === "MAC" ? "a" : "an";
-			if (currentType === "none") {
-				// Use the stored invalid type and reason if available
-				if (currentInvalidType && currentInvalidReason) {
-					if (actualType) actualType.textContent = `This is an invalid ${currentInvalidType} address. It ${currentInvalidReason}`;
-				} else {
-					if (actualType) actualType.textContent = "This is not a valid IP or MAC address.";
-					// Fallback to detection in case we don't have stored information
-					const invalidReason = detectInvalidReason(currentAddress);
-					if (invalidReason && actualType) {
-						actualType.textContent += `: ${invalidReason}`;
-					}
-				}
+		const article = currentType === "MAC" ? "a" : "an";
+		if (currentType === "none") {
+			// Use the stored invalid type and reason if available
+			if (currentInvalidType && currentInvalidReason) {
+				actualType.textContent = `This is an invalid ${currentInvalidType} address. It ${currentInvalidReason}`;
 			} else {
-				if (actualType) actualType.textContent = `This is ${article} ${currentType} address.`;
+				actualType.textContent = "This is not a valid IP or MAC address.";
+				// Fallback to detection in case we don't have stored information
+				const invalidReason = detectInvalidReason(currentAddress);
+				if (invalidReason) {
+					actualType.textContent += `: ${invalidReason}`;
+				}
 			}
+		} else {
+			actualType.textContent = `This is ${article} ${currentType} address.`;
 		}
 
+		streak = 0;
 		updateStreakDisplay();
 	}
 
 	// Show next button
-	if (nextBtn) nextBtn.style.display = "block";
+	nextBtn.style.display = "block";
 }
 
 // Helper function to detect what's wrong with an invalid address (fallback)
@@ -555,83 +507,19 @@ function detectInvalidReason(address) {
 }
 
 function toggleHintPanel() {
-	if (hintPanel) {
-		hintPanel.classList.toggle('show');
-	}
+	hintPanel.classList.toggle('show');
 }
+
+// Event listeners
+optionsContainer.addEventListener("click", handleOptionClick);
+hintBtn.addEventListener("click", toggleHintPanel);
+nextBtn.addEventListener("click", showNextQuestion);
 
 // Initialize quiz
 function initializeQuiz() {
 	console.log("Initializing quiz");
-	initializeDOMElements();
-	setupKeyboardShortcuts();
 	showNextQuestion();
 	updateStreakDisplay();
-}
-
-// Setup keyboard shortcuts
-function setupKeyboardShortcuts() {
-	document.addEventListener('keydown', handleKeyboardShortcut);
-}
-
-// Handle keyboard shortcut events
-function handleKeyboardShortcut(event) {
-	// Only handle shortcuts if buttons are not disabled and modal is not open
-	const modal = document.getElementById('scoreModal');
-	const modalVisible = modal && modal.style.display !== 'none';
-	const buttonsDisabled = document.querySelector('.option.disabled');
-	
-	if (modalVisible) {
-		return;
-	}
-	
-	// Prevent default behavior for our shortcut keys
-	const key = event.key;
-	if (['1', '2', '3', '4'].includes(key)) {
-		event.preventDefault();
-		
-		// Don't allow option selection if buttons are disabled
-		if (buttonsDisabled) {
-			return;
-		}
-		
-		let targetButton;
-		switch (key) {
-			case '1':
-				targetButton = document.querySelector('[data-type="IPv4"]');
-				break;
-			case '2':
-				targetButton = document.querySelector('[data-type="IPv6"]');
-				break;
-			case '3':
-				targetButton = document.querySelector('[data-type="MAC"]');
-				break;
-			case '4':
-				targetButton = document.querySelector('[data-type="none"]');
-				break;
-		}
-		
-		if (targetButton && !targetButton.classList.contains('disabled')) {
-			// Add visual feedback for keyboard press
-			targetButton.style.transform = 'scale(0.95)';
-			setTimeout(() => {
-				targetButton.style.transform = '';
-			}, 100);
-			
-			// Trigger the click
-			targetButton.click();
-		}
-	}
-	
-	// Handle Enter/Space for "Next Question" button
-	if ((key === 'Enter' || key === ' ')) {
-		const nextButton = document.getElementById('next-btn');
-		
-		if (nextButton && nextButton.style.display === 'block') {
-			event.preventDefault();
-			nextButton.click();
-		}
-	}
 }
 
 // Start quiz when DOM is ready

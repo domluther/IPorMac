@@ -3,52 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Address Quiz</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Network Address Practice by Mr Luther</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="quiz-styles.css">
 </head>
 <body>
-    <div class="quiz-container">
-        <h1>Network Address Quiz</h1>
-        
-        <div class="streak">Current streak: <span id="streak-count">0</span> <span id="streak-ducks"></span></div>
-        
-        <div class="address-display" id="address-display">
-            Loading question...
+    <div class="container">
+        <div class="header">
+            <nav class="site-nav">
+                <div class="nav-dropdown" id="siteNavDropdown">
+                    <button class="nav-toggle" id="navToggle">
+                        🎓 GCSE CS Tools
+                    </button>
+                    <div class="nav-menu" id="navMenu">
+                        <div class="nav-menu-header">Computer Science Practice</div>
+                        <a href="https://trace-table-practice.netlify.app/" class="nav-item">
+                            <span class="nav-item-title">Trace Tables</span>
+                            <span class="nav-item-desc">Practice OCR ERL algorithm tracing</span>
+                        </a>
+                        <a href="https://input-output-practice.netlify.app/" class="nav-item">
+                            <span class="nav-item-title">Programming Practice</span>
+                            <span class="nav-item-desc">Input/output and basic programming concepts</span>
+                        </a>
+                        <a href="https://convertdataunits.netlify.app/" class="nav-item">
+                            <span class="nav-item-title">Data Units</span>
+                            <span class="nav-item-desc">Convert units and calculate file sizes</span>
+                        </a>
+                        <a href="https://ipormac.netlify.app/" class="nav-item current">
+                            <span class="nav-item-title">Network Addresses</span>
+                            <span class="nav-item-desc">Identify IP addresses and MAC addresses</span>
+                        </a>
+                        <a href="https://ocrsortvisualiser.netlify.app/" class="nav-item">
+                            <span class="nav-item-title">Sort Algorithms</span>
+                            <span class="nav-item-desc">Visualize bubble, merge & insertion sorts</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            
+            <h1>🦆 Network Address Practice 🦆</h1>
+            <p>Master the identification of IPv4, IPv6, and MAC addresses</p>
+            <button id="scoreButton" class="score-button" onclick="window.scoreManager.showScoreModal()" style="display: block;">📊 Scores (0%)</button>
         </div>
         
-        <button class="hint-btn" id="hint-btn">Show Hint</button>
-        
-        <div class="hint-panel" id="hint-panel">
-            <h3>Address Format Rules:</h3>
-            <ul>
-                <li><strong>IPv4:</strong> 4 decimal numbers (0-255) separated by dots<br>
-                    Example: 192.168.1.1</li>
-                <li><strong>IPv6:</strong> 8 groups of 4 hex digits separated by colons. Groups can be empty or compressed.<br>
-                    Example: 2001:0db8:85a3:0000:0000:8a2e:0370:7334<br>
-                    Compressed: 2001:db8::8a2e:370:7334</li>
-                <li><strong>MAC:</strong> 6 pairs of hex digits separated by colons or dashes<br>
-                    Example: 00:1A:2B:3C:4D:5E or 00-1A-2B-3C-4D-5E</li>
-            </ul>
+        <div class="content">
+            <div class="feature-section">
+                <h3>IP or MAC?</h3>
+                <div class="streak">Current streak: <span id="streak-count">0</span> <span id="streak-ducks"></span></div>
+                
+                <div class="address-display" id="address-display">
+                    Loading question...
+                </div>
+                
+                <div class="options" id="options">
+                    <button class="btn option" data-type="IPv4"><span class="shortcut">1</span> IPv4</button>
+                    <button class="btn option" data-type="IPv6"><span class="shortcut">2</span> IPv6</button>
+                    <button class="btn option" data-type="MAC"><span class="shortcut">3</span> MAC</button>
+                    <button class="btn option" data-type="none"><span class="shortcut">4</span> None</button>
+                </div>
+                
+                <div class="feedback correct" id="feedback-correct">
+                    Correct! <span id="correct-type"></span>.
+                </div>
+                
+                <div class="feedback incorrect" id="feedback-incorrect">
+                    Incorrect! <span id="actual-type"></span>
+                </div>
+                
+                <button class="btn btn-success" id="next-btn">Next Question</button>
+            </div>
+
+            <div class="feature-section">
+                <h3>Need Help?</h3>
+                <button class="btn btn-warning" id="hint-btn">Show Address Format Rules</button>
+                
+                <div class="hint-panel" id="hint-panel">
+                    <h4>Address Format Rules:</h4>
+                    <ul>
+                        <li><strong>IPv4:</strong> 4 decimal numbers (0-255) separated by dots<br>
+                            Example: 192.168.1.1</li>
+                        <li><strong>IPv6:</strong> 8 groups of 4 hex digits separated by colons. Groups can be empty or compressed.<br>
+                            Example: 2001:0db8:85a3:0000:0000:8a2e:0370:7334<br>
+                            Compressed: 2001:db8::8a2e:370:7334</li>
+                        <li><strong>MAC:</strong> 6 pairs of hex digits separated by colons or dashes<br>
+                            Example: 00:1A:2B:3C:4D:5E or 00-1A-2B-3C-4D-5E</li>
+                    </ul>
+                </div>
+            </div>
         </div>
         
-        <div class="options" id="options">
-            <button class="option" data-type="IPv4">IPv4</button>
-            <button class="option" data-type="IPv6">IPv6</button>
-            <button class="option" data-type="MAC">MAC</button>
-            <button class="option" data-type="none">None</button>
+        <div class="footer">
+            Copyright <a href="https://mrluthercodes.netlify.app/" target="_blank">Mr Luther</a> 2025
         </div>
-        
-        <div class="feedback correct" id="feedback-correct">
-            Correct! <span id="correct-type"></span>.
-        </div>
-        
-        <div class="feedback incorrect" id="feedback-incorrect">
-            Incorrect! <span id="actual-type"></span>
-        </div>
-        
-        <button class="next-btn" id="next-btn">Next Question</button>
     </div>
 
+    <!-- Score Modal -->
+    <div id="scoreModal" class="score-modal-overlay" style="display: none;">
+        <div class="score-modal">
+            <div class="score-modal-header">
+                <h2>🏆 Your Progress</h2>
+                <button class="close-modal" onclick="window.scoreManager.hideScoreModal()">×</button>
+            </div>
+            <div class="score-modal-content">
+                <div class="level-info" id="levelInfo">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <div class="overall-stats">
+                    <h3>📈 Overall Statistics</h3>
+                    <div class="stat-grid" id="statGrid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+                <div class="program-stats" id="programStats">
+                    <h3>📋 Breakdown by Address Type</h3>
+                    <div id="programList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+                <div class="no-scores" id="noScores" style="display: none;">
+                    <p>No scores recorded yet. Start practicing to see your progress!</p>
+                </div>
+            </div>
+            <div class="score-modal-footer">
+                <button class="reset-scores-btn" onclick="window.scoreManager.resetAllScores()">Reset All Scores</button>
+                <button class="close-modal-btn" onclick="window.scoreManager.hideScoreModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/navigation.js"></script>
+    <script src="js/score-manager.js"></script>
+    <script>
+        // Initialize the score manager globally
+        window.scoreManager = new ScoreManager('network-addresses');
+        // Enable score button display and update its text
+        document.querySelector('.score-button').style.display = 'block';
+        window.scoreManager.updateScoreButton();
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
