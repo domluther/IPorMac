@@ -246,7 +246,7 @@ class ScoreManager {
         `;
 
         if (nextLevel) {
-            const pointsNeeded = nextLevel.minPoints - totalCorrect;
+            const pointsNeeded = Math.max(nextLevel.minPoints - totalCorrect, 0);
             const totalAttempts = Object.values(this.scores).reduce((sum, score) => sum + score.attempts, 0);
             const accuracy = totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
             
