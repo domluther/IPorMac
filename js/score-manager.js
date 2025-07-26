@@ -92,7 +92,8 @@ class ScoreManager {
                     'IPv6': { attempts: 0, correct: 0 },
                     'MAC': { attempts: 0, correct: 0 },
                     'none': { attempts: 0, correct: 0 }
-                }
+                },
+                history: []
             };
         }
 
@@ -222,6 +223,7 @@ class ScoreManager {
         this.populateLevelInfo();
         this.populateOverallStats();
         this.populateIndividualScores();
+        // this.populateHistory();
     }
 
     populateLevelInfo() {
@@ -363,6 +365,62 @@ class ScoreManager {
             `;
         }).join('');
     }
+
+    //TODO Needs implementing
+    // populateHistory() {
+    //     const questionHistory = document.getElementById('questionHistory');
+    //     const noHistory = document.getElementById('noHistory');
+    //     if (!questionHistory || !noHistory) return;
+
+    //     const historyEntries = Object.entries(this.scores);
+        
+    //     if (historyEntries.length === 0) {
+    //         questionHistory.style.display = 'none';
+    //         noHistory.style.display = 'block';
+    //         return;
+    //     }
+
+    //     questionHistory.style.display = 'block';
+    //     noHistory.style.display = 'none';
+
+    //     // Show breakdown by address type
+    //     questionHistory.innerHTML = historyEntries.map(([key, score]) => {
+    //         const addressTypes = ['IPv4', 'IPv6', 'MAC', 'none'];
+    //         const typeBreakdown = addressTypes.map(type => {
+    //             // Safety check - ensure byType exists and has the type
+    //             const typeData = score.byType && score.byType[type] ? score.byType[type] : { attempts: 0, correct: 0 };
+    //             const attempts = typeData.attempts;
+    //             const correct = typeData.correct;
+    //             const percentage = attempts > 0 ? Math.round((correct / attempts) * 100) : 0;
+                
+    //             let className = 'score-na';
+    //             if (attempts > 0) {
+    //                 if (percentage >= 90) className = 'score-excellent';
+    //                 else if (percentage >= 70) className = 'score-good';
+    //                 else if (percentage >= 50) className = 'score-fair';
+    //                 else className = 'score-poor';
+    //             }
+                
+    //             const displayText = attempts > 0 ? `${correct}/${attempts} (${percentage}%)` : '0/0 (0%)';
+    //             const displayType = type === 'none' ? 'Invalid' : type;
+                
+    //             return `
+    //                 <div class="type-breakdown">
+    //                     <span class="type-label">${displayType}:</span>
+    //                     <span class="type-score ${className}">${displayText}</span>
+    //                 </div>
+    //             `;
+    //         }).join('');
+
+    //         return `
+    //             <div class="program-item">
+    //                 <div class="address-type-breakdown">
+    //                     ${typeBreakdown}
+    //                 </div>
+    //             </div>
+    //         `;
+    //     }).join('');
+    // }
 
     formatItemName(key) {
         // Convert key to readable name (override in site-specific implementations)

@@ -50,7 +50,7 @@
         <div class="content">
             <div class="feature-section">
                 <h3>IP or MAC?</h3>
-                <div class="streak">Current streak: <span id="streak-count">0</span> <span id="streak-ducks"></span></div>
+                <div class="streak">Current streak:  <span id="streak-ducks"></span> (<span id="streak-count">0</span>)</div>
                 
                 <div class="address-display" id="address-display">
                     Loading question...
@@ -124,6 +124,15 @@
                 <div class="no-scores" id="noScores" style="display: none;">
                     <p>No scores recorded yet. Start practicing to see your progress!</p>
                 </div>
+
+                <!-- <div class="question-history">
+                    <h3>📝 Question History</h3>
+                    <div id="questionHistory">
+                    </div>
+                </div>
+                <div class="no-history" id="noHistory" style="display: none;">
+                    <p>No question history available. Start practicing to see your progress!</p>
+                </div> -->
             </div>
             <div class="score-modal-footer">
                 <button class="reset-scores-btn" onclick="window.scoreManager.resetAllScores()">Reset All Scores</button>

@@ -665,7 +665,6 @@ if (document.readyState === "loading") {
 
 // Fallback initialization for window load
 window.addEventListener("load", () => {
-	console.log("Window loaded, ensuring quiz is initialized");
 	if (!currentAddress) {
 		initializeQuiz();
 	}
