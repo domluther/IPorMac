@@ -8,7 +8,6 @@ let currentAddress = "";
 let currentType = "";
 let currentInvalidType = "";
 let currentInvalidReason = "";
-// Streak is now managed by scoreManager, not as a local variable
 
 // Initialize DOM elements
 function initializeDOMElements() {
@@ -34,9 +33,11 @@ function initializeDOMElements() {
 // Address generation functions
 function generateIPv4() {
 	// Create a valid IPv4 address: four numbers from 0-255 separated by dots
-	return Array.from({ length: 4 }, () => Math.floor(Math.random() * 256)).join(
-		".",
-	);
+	// First octet is 1-255, remaining octets are 0-255
+	const firstOctet = Math.floor(Math.random() * 255) + 1;
+	const remainingOctets = Array.from({ length: 3 }, () => Math.floor(Math.random() * 256));
+	
+	return [firstOctet, ...remainingOctets].join(".");
 }
 
 function generateIPv6() {
@@ -82,14 +83,14 @@ function generateMAC() {
 
 function generateInvalidAddress() {
 	const invalidTypes = [
-		// IPv4 with 5 chunks
+		// IPv4 with 2 chunks
 		{
 			generator: () =>
-				Array.from({ length: 5 }, () => Math.floor(Math.random() * 256)).join(
+				Array.from({ length: 2 }, () => Math.floor(Math.random() * 256)).join(
 					".",
 				),
 			invalidType: "IPv4",
-			reason: "has too many segments (5 not 4)",
+			reason: "has too few segments (2 not 4)",
 		},
 
 		// IPv4 with 3 chunks
@@ -102,6 +103,17 @@ function generateInvalidAddress() {
 			reason: "has too few segments (3 not 4)",
 		},
 
+		// IPv4 with 5 chunks
+		{
+			generator: () =>
+				Array.from({ length: 5 }, () => Math.floor(Math.random() * 256)).join(
+					".",
+				),
+			invalidType: "IPv4",
+			reason: "has too many segments (5 not 4)",
+		},
+
+
 		// IPv4 with colons instead of dots
 		{
 			generator: () =>
@@ -110,6 +122,16 @@ function generateInvalidAddress() {
 				),
 			invalidType: "IPv4",
 			reason: "has wrong separators (colons instead of dots)",
+		},
+
+		// IPv4 with dashes instead of dots
+		{
+			generator: () =>
+				Array.from({ length: 4 }, () => Math.floor(Math.random() * 256)).join(
+					"-",
+				),
+			invalidType: "IPv4",
+			reason: "has wrong separators (dashes instead of dots)",
 		},
 
 		// IPv4 with at least one number out of range (> 255)
@@ -133,7 +155,7 @@ function generateInvalidAddress() {
 					Math.floor(Math.random() * 256),
 				);
 				const negativeIndex = Math.floor(Math.random() * 4);
-				segments[negativeIndex] = -Math.floor(Math.random() * 100) - 1; // -1 to -100
+				segments[negativeIndex] = -Math.floor(Math.random() * 255) - 1; // -1 to -255
 				return segments.join(".");
 			},
 			invalidType: "IPv4",
@@ -442,7 +464,7 @@ function handleOptionClick(event) {
 	}
 
 	// Update feedback
-	if (selectedType === currentType) {
+	if (isCorrect) {
 		// Correct answer
 		if (feedbackCorrect) {
 			feedbackCorrect.style.display = "block";

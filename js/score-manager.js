@@ -8,6 +8,7 @@ class ScoreManager {
     constructor(siteKey = 'template-site') {
         this.siteKey = siteKey; // Unique identifier for this site's scores
         this.storageKey = `gcse-cs-scores-${this.siteKey}`;
+        this.streakKey = `${this.storageKey}-streak`;
         this.scores = this.loadScores();
         this.streak = this.loadStreak(); // Load saved streak
         
@@ -42,8 +43,7 @@ class ScoreManager {
 
     loadStreak() {
         try {
-            const streakKey = `${this.storageKey}-streak`;
-            const stored = localStorage.getItem(streakKey);
+            const stored = localStorage.getItem(this.streakKey);
             return stored ? parseInt(stored, 10) : 0;
         } catch (error) {
             console.warn('Error loading streak:', error);
@@ -53,8 +53,7 @@ class ScoreManager {
 
     saveStreak() {
         try {
-            const streakKey = `${this.storageKey}-streak`;
-            localStorage.setItem(streakKey, this.streak.toString());
+            localStorage.setItem(this.streakKey, this.streak.toString());
         } catch (error) {
             console.warn('Error saving streak:', error);
         }
