@@ -142,7 +142,7 @@ export function StatsModal({
 												<div>
 													🎯 {Math.round(overallStats.nextLevel.minAccuracy)}%
 													accuracy required (currently{" "}
-													{Math.round(overallStats.accuracy)}%)
+													{Math.floor(overallStats.accuracy)}%)
 												</div>
 											)}
 										</div>
@@ -189,7 +189,7 @@ export function StatsModal({
 										</div>
 										<div className="bg-purple-50 rounded-lg p-4 text-center border-l-4 border-purple-500">
 											<div className="text-2xl font-bold text-purple-600">
-												{Math.round(overallStats.accuracy)}%
+												{Math.floor(overallStats.accuracy)}%
 											</div>
 											<div className="text-sm text-gray-600">Accuracy</div>
 										</div>
