@@ -132,4 +132,7 @@
 	body {
 		@apply bg-background text-foreground;
 	}
+	a.underline {
+		text-decoration: underline !important
+	}
 }
