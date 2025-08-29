@@ -133,6 +133,6 @@
 		@apply bg-background text-foreground;
 	}
 	a.underline {
-		text-decoration: underline !important
+		text-decoration: underline !important;
 	}
 }

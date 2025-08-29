@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { QuizLayout, SimpleQuizBody } from "@/components";
 import { HintPanel } from "@/components/HintPanel";
-import { QuizButton } from "@/components/QuizButton";
 import { ScoreButton } from "@/components/ScoreButton";
 import { StatsModal } from "@/components/StatsModal";
 import { useQuizLogic } from "@/hooks/useQuizLogic";
@@ -52,7 +51,6 @@ function Index() {
 	const [currentQuestion, setCurrentQuestion] =
 		useState<NetworkAddressQuestion | null>(null);
 	const [showStatsModal, setShowStatsModal] = useState(false);
-	const [showHints, setShowHints] = useState(false);
 
 	// Quiz state management using reusable hook
 	const quizLogic = useQuizLogic({
@@ -97,7 +95,7 @@ function Index() {
 	 */
 	const questionRenderer = useCallback(
 		(question: NetworkAddressQuestion) => (
-			<div className="font-mono text-2xl sm:text-3xl text-center p-6 sm:p-8 bg-gradient-to-br from-indigo-500 via-purple-600 to-purple-700 text-white rounded-xl border-3 border-indigo-600 shadow-lg font-semibold tracking-wider break-all">
+			<div className="p-6 font-mono text-2xl font-semibold tracking-wider text-center text-white break-all border-indigo-600 shadow-lg sm:text-3xl sm:p-8 bg-gradient-to-br from-indigo-500 via-purple-600 to-purple-700 rounded-xl border-3">
 				{question.address}
 			</div>
 		),
@@ -166,17 +164,7 @@ function Index() {
 
 	// Help section with toggleable address format reference
 	const helpSection = (
-		<div className="bg-gray-50 rounded-lg p-6 border-l-4 border-green-500">
-			<h2 className="text-xl font-semibold mb-4 text-gray-800">Need Help?</h2>
-			<QuizButton variant="secondary" onClick={() => setShowHints(!showHints)}>
-				{showHints ? "Hide" : "Show"} Address Format Rules
-			</QuizButton>
-			<HintPanel
-				isVisible={showHints}
-				title="📝 Address Format Rules:"
-				items={siteConfig.hints || []}
-			/>
-		</div>
+		<HintPanel title="📝 Address Format Rules" items={siteConfig.hints || []} />
 	);
 
 	return (

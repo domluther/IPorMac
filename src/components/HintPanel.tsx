@@ -1,5 +1,3 @@
-import { cn } from "@/lib/utils";
-
 export interface HintItem {
 	title: string;
 	description: string;
@@ -8,7 +6,6 @@ export interface HintItem {
 }
 
 interface HintPanelProps {
-	isVisible: boolean;
 	title?: string;
 	items: HintItem[];
 }
@@ -16,15 +13,11 @@ interface HintPanelProps {
 /**
  * Generic help panel component for GCSE CS practice sites
  * Displays format rules, examples, or any educational content
- * Toggleable visibility with smooth transitions and color-coded sections
  */
 export function HintPanel({
-	isVisible,
 	title = "📝 Help & Rules:",
 	items,
 }: HintPanelProps) {
-	if (!isVisible) return null;
-
 	const colorClasses = {
 		blue: "font-semibold text-blue-700",
 		purple: "font-semibold text-purple-700",
@@ -34,32 +27,26 @@ export function HintPanel({
 	};
 
 	return (
-		<div
-			className={cn(
-				"mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-6",
-				"transition-all duration-300 ease-in-out",
-				isVisible
-					? "opacity-100 max-h-96"
-					: "opacity-0 max-h-0 overflow-hidden",
-			)}
-		>
-			<h3 className="text-lg font-bold text-yellow-800 mb-4">{title}</h3>
-			<ul className="space-y-4 text-gray-700">
-				{items.map((item) => (
-					<li key={item.title} className="flex flex-col gap-1">
-						<div className={colorClasses[item.color]}>{item.title}:</div>
-						<div className="text-sm">{item.description}</div>
-						{item.examples.map((example) => (
-							<div
-								key={example}
-								className="text-sm text-gray-600 bg-gray-100 rounded px-2 py-1 font-mono"
-							>
-								{example}
-							</div>
-						))}
-					</li>
-				))}
-			</ul>
-		</div>
+		<details className="p-6 mt-4 list-none border-l-4 rounded-lg cursor-pointer bg-slate-100 border-l-teal-500">
+			<summary className="mb-0 font-semibold text-md">{title}</summary>
+			<div className="pl-4 overflow-y-auto max-h-64">
+				<ul className="space-y-4 text-gray-700">
+					{items.map((item) => (
+						<li key={item.title} className="flex flex-col gap-1">
+							<div className={colorClasses[item.color]}>{item.title}:</div>
+							<div className="text-sm">{item.description}</div>
+							{item.examples.map((example) => (
+								<div
+									key={example}
+									className="px-2 py-1 font-mono text-sm text-gray-600 bg-gray-200 rounded"
+								>
+									{example}
+								</div>
+							))}
+						</li>
+					))}
+				</ul>
+			</div>
+		</details>
 	);
 }

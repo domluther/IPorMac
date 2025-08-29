@@ -32,7 +32,7 @@ export function QuizLayout({
 				title={`${titleIcon} ${title} ${titleIcon}`}
 				subtitle={subtitle}
 			/>
-			<main className="bg-white p-6">
+			<main className="p-6 bg-white">
 				<div className="mx-auto">{children}</div>
 			</main>
 		</>

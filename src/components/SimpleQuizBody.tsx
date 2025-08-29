@@ -151,14 +151,14 @@ export function SimpleQuizBody<TQuestion>({
 	return (
 		<div className="mx-auto space-y-6">
 			{/* Main Quiz Section */}
-			<div className="bg-gray-50 rounded-lg p-6 border-l-4 border-green-500">
-				<h2 className="text-xl font-semibold mb-4 text-gray-800">{title}</h2>
+			<div className="p-6 border-l-4 border-green-500 rounded-lg bg-gray-50">
+				<h2 className="mb-4 text-xl font-semibold text-gray-800">{title}</h2>
 
-				{instructions && <p className="text-gray-600 mb-4">{instructions}</p>}
+				{instructions && <p className="mb-4 text-gray-600">{instructions}</p>}
 
 				{/* Streak Display */}
 				{showStreakEmojis && (
-					<div className="text-center text-lg mb-6 font-semibold text-gray-700 p-3 bg-gray-100 rounded-lg border-2 border-gray-200">
+					<div className="p-3 mb-6 text-lg font-semibold text-center text-gray-700 bg-gray-100 border-2 border-gray-200 rounded-lg">
 						Current streak:{" "}
 						<span className="text-yellow-600">
 							{scoreManager.formatStreakEmojis(streak)}
@@ -174,7 +174,7 @@ export function SimpleQuizBody<TQuestion>({
 
 				{/* Answer Options */}
 				{currentQuestion && (
-					<div className="grid grid-cols-2 gap-4 mb-6">
+					<div className="mb-6 grid grid-cols-2 gap-4">
 						{answers.map((answer) => {
 							const isSelected = feedback && selectedAnswerId === answer.id;
 							const isCorrect = currentQuestion
@@ -248,7 +248,7 @@ export function SimpleQuizBody<TQuestion>({
 			{helpSection && helpSection}
 
 			{/* Keyboard Shortcuts Info */}
-			<div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+			<div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
 				<div className="text-sm text-gray-600 space-y-1">
 					<p>
 						<strong>Keyboard Shortcuts:</strong>

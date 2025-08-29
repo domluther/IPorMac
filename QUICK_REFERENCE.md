@@ -79,7 +79,7 @@ function MyComponent() {
 
 ### Basic Classes
 ```tsx
-<div className="p-4 bg-blue-500 text-white rounded-lg shadow-md">
+<div className="p-4 text-white bg-blue-500 rounded-lg shadow-md">
   Content
 </div>
 ```
