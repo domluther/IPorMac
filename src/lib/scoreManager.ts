@@ -16,6 +16,7 @@ export interface ScoreData {
 		addressType: string;
 		address: string;
 	}>;
+	streak: number;
 }
 
 const blankScoreData = {
@@ -28,14 +29,13 @@ const blankScoreData = {
 		none: { attempts: 0, correct: 0 },
 	},
 	history: [],
+	streak: 0,
 };
 
 export class ScoreManager {
 	private siteKey: string;
 	private storageKey: string;
-	private streakKey: string;
 	private scores: ScoreData = blankScoreData;
-	private streak: number = 0;
 	private levels: LevelInfo[];
 
 	// Default generic levels that can be used as fallback
@@ -87,10 +87,8 @@ export class ScoreManager {
 	constructor(siteKey = "generic-quiz", customLevels?: LevelInfo[]) {
 		this.siteKey = siteKey;
 		this.storageKey = `gcse-cs-scores-${this.siteKey}`;
-		this.streakKey = `${this.storageKey}-streak`;
 		this.levels = customLevels || ScoreManager.DEFAULT_LEVELS;
 		this.scores = this.loadScores();
-		this.streak = this.loadStreak();
 	}
 
 	private loadScores(): ScoreData {
@@ -111,41 +109,13 @@ export class ScoreManager {
 		}
 	}
 
-	private loadStreak(): number {
-		try {
-			const stored = localStorage.getItem(this.streakKey);
-			return stored ? parseInt(stored, 10) : 0;
-		} catch (error) {
-			console.warn("Error loading streak:", error);
-			return 0;
-		}
-	}
-
-	private saveStreak(): void {
-		try {
-			localStorage.setItem(this.streakKey, this.streak.toString());
-		} catch (error) {
-			console.warn("Error saving streak:", error);
-		}
-	}
-
-	updateStreak(isCorrect: boolean): number {
-		if (isCorrect) {
-			this.streak++;
-		} else {
-			this.streak = 0;
-		}
-		this.saveStreak();
-		return this.streak;
-	}
-
 	getStreak(): number {
-		return this.streak;
+		return this.scores.streak;
 	}
 
 	resetStreak(): void {
-		this.streak = 0;
-		this.saveStreak();
+		this.scores.streak = 0;
+		this.saveScores();
 	}
 
 	recordScore(
@@ -162,6 +132,9 @@ export class ScoreManager {
 		scoreData.attempts++;
 		if (isCorrect) {
 			scoreData.correct++;
+			scoreData.streak++;
+		} else {
+			scoreData.streak = 0;
 		}
 
 		if (addressType && scoreData.byType[addressType]) {
@@ -194,9 +167,11 @@ export class ScoreManager {
 		level: LevelInfo;
 		progress: number;
 		nextLevel: LevelInfo | null;
+		streak: number;
 	} {
 		const totalAttempts = this.scores.attempts;
 		const totalCorrect = this.scores.correct;
+		const streak = this.scores.streak;
 		const totalPoints = totalCorrect;
 		const accuracy =
 			totalAttempts > 0 ? (totalCorrect / totalAttempts) * 100 : 0;
@@ -240,6 +215,7 @@ export class ScoreManager {
 			level: currentLevel,
 			progress,
 			nextLevel,
+			streak,
 		};
 	}
 
@@ -272,9 +248,7 @@ export class ScoreManager {
 
 	resetAllScores(): void {
 		this.scores = blankScoreData;
-		this.streak = 0;
 		this.saveScores();
-		this.saveStreak();
 	}
 
 	formatStreakEmojis(streak: number): string {

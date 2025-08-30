@@ -52,7 +52,6 @@ export function useQuizLogic({
 			// Update streak
 			const newStreak = isCorrect ? streak + 1 : 0;
 			setStreak(newStreak);
-			scoreManager.updateStreak(isCorrect);
 
 			// Update stats
 			refreshStats();
