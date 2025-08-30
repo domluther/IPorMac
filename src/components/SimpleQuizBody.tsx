@@ -156,17 +156,6 @@ export function SimpleQuizBody<TQuestion>({
 
 				{instructions && <p className="mb-4 text-gray-600">{instructions}</p>}
 
-				{/* Streak Display */}
-				{showStreakEmojis && (
-					<div className="p-3 mb-6 text-lg font-semibold text-center text-gray-700 bg-gray-100 border-2 border-gray-200 rounded-lg">
-						Current streak:{" "}
-						<span className="text-yellow-600">
-							{scoreManager.formatStreakEmojis(streak)}
-						</span>{" "}
-						({streak})
-					</div>
-				)}
-
 				{/* Question Display */}
 				{currentQuestion && (
 					<div className="mb-6">{questionRenderer(currentQuestion)}</div>
@@ -174,7 +163,7 @@ export function SimpleQuizBody<TQuestion>({
 
 				{/* Answer Options */}
 				{currentQuestion && (
-					<div className="mb-6 grid grid-cols-2 gap-4">
+					<div className="grid grid-cols-2 gap-4 mb-6">
 						{answers.map((answer) => {
 							const isSelected = feedback && selectedAnswerId === answer.id;
 							const isCorrect = currentQuestion
@@ -215,10 +204,22 @@ export function SimpleQuizBody<TQuestion>({
 					</div>
 				)}
 
+				{/* Streak Display */}
+				{showStreakEmojis && (
+					<div className="max-w-md p-3 m-auto my-6 text-lg font-semibold text-center text-gray-700 bg-gray-100 border-2 border-gray-200 rounded-lg">
+						Streak:{" "}
+						<span className="text-yellow-600">
+							{scoreManager.formatStreakEmojis(streak)}
+						</span>{" "}
+						({streak})
+					</div>
+				)}
+
 				{/* Feedback Display */}
 				{feedback && (
-					<div
-						className={`
+					<>
+						<div
+							className={`
 						p-5 rounded-lg mb-6 text-center font-semibold
 						${
 							feedback.isCorrect
@@ -226,30 +227,28 @@ export function SimpleQuizBody<TQuestion>({
 								: "bg-red-100 text-red-900 border border-red-300"
 						}
 					`}
-					>
-						<div className="mb-2">{feedback.message}</div>
-						{feedback.explanation && (
-							<div className="text-sm opacity-90">{feedback.explanation}</div>
-						)}
-					</div>
-				)}
+						>
+							<div className="mb-2">{feedback.message}</div>
+							{feedback.explanation && (
+								<div className="text-sm opacity-90">{feedback.explanation}</div>
+							)}
+						</div>
 
-				{/* Next Question Button */}
-				{feedback && (
-					<div className="text-center">
-						<QuizButton variant="action" onClick={quizHandleNextQuestion}>
-							Next Question
-						</QuizButton>
-					</div>
+						<div className="text-center">
+							<QuizButton variant="action" onClick={quizHandleNextQuestion}>
+								Next Question
+							</QuizButton>
+						</div>
+					</>
 				)}
 			</div>
 
 			{/* Optional Help Section */}
-			{helpSection && helpSection}
+			{helpSection}
 
 			{/* Keyboard Shortcuts Info */}
 			<div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-				<div className="text-sm text-gray-600 space-y-1">
+				<div className="space-y-1 text-sm text-gray-600">
 					<p>
 						<strong>Keyboard Shortcuts:</strong>
 					</p>
