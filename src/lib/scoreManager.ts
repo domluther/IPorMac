@@ -128,7 +128,6 @@ export class ScoreManager {
 		}
 
 		const scoreData = this.scores;
-		console.log(this.scores);
 		scoreData.attempts++;
 		if (isCorrect) {
 			scoreData.correct++;

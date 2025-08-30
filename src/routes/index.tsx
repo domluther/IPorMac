@@ -164,7 +164,6 @@ function Index() {
 		<HintPanel title="📝 Address Format Rules" items={siteConfig.hints || []} />
 	);
 
-	console.log(overallStats);
 	return (
 		<QuizLayout
 			title={siteConfig.title}
