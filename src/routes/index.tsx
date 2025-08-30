@@ -65,9 +65,6 @@ function Index() {
 				invalidReason: addressData.invalidReason,
 			});
 		},
-		// Network Address scoring: 100 points per correct answer
-		correctPoints: 100,
-		maxPoints: 100,
 	});
 
 	// Extract state for UI components
@@ -167,6 +164,7 @@ function Index() {
 		<HintPanel title="📝 Address Format Rules" items={siteConfig.hints || []} />
 	);
 
+	console.log(overallStats);
 	return (
 		<QuizLayout
 			title={siteConfig.title}

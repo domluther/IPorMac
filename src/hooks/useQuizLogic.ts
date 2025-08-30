@@ -23,8 +23,6 @@ export interface QuizFeedback {
 export function useQuizLogic({
 	scoreManager,
 	onQuestionGenerate,
-	correctPoints = 100,
-	maxPoints = 100,
 }: UseQuizLogicProps) {
 	// Core quiz state
 	const [streak, setStreak] = useState(() => scoreManager.getStreak());
@@ -43,12 +41,8 @@ export function useQuizLogic({
 	const handleAnswerSelect = useCallback(
 		(answerId: number, isCorrect: boolean, questionData?: unknown) => {
 			// Record score with configurable points
-			const questionKey = `quiz-${Date.now()}`;
-			const earnedPoints = isCorrect ? correctPoints : 0;
 			scoreManager.recordScore(
-				questionKey,
-				earnedPoints,
-				maxPoints,
+				isCorrect,
 				// Type assertion for questionData properties (safe since it's optional)
 				(questionData as { type?: string; address?: string } | undefined)?.type,
 				(questionData as { type?: string; address?: string } | undefined)
@@ -66,7 +60,7 @@ export function useQuizLogic({
 			// Store selected answer for UI feedback
 			setSelectedAnswerId(answerId);
 		},
-		[scoreManager, streak, refreshStats, correctPoints, maxPoints],
+		[scoreManager, streak, refreshStats],
 	);
 
 	// Handle moving to next question
