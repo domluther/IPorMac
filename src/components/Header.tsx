@@ -16,7 +16,7 @@ export function Header({ scoreButton, title, subtitle }: HeaderProps) {
 	const currentSiteId = detectCurrentSite();
 
 	return (
-		<header className="relative p-6 text-center text-white bg-gradient-to-r from-gray-700 to-gray-900">
+		<header className="relative p-4 text-center text-indigo-50 sm:p-6 bg-header/80">
 			<SiteNavigation
 				menuItems={GCSE_NAVIGATION_MENU}
 				currentSiteId={currentSiteId}
@@ -24,14 +24,16 @@ export function Header({ scoreButton, title, subtitle }: HeaderProps) {
 				icon="🎓"
 			/>
 			{scoreButton && (
-				<div className="absolute top-3 right-3 xl:top-5 xl:right-8">
+				<div className="absolute top-2 right-2 sm:top-3 sm:right-3 xl:top-5 xl:right-8">
 					{scoreButton}
 				</div>
 			)}
-			<h1 className="mb-2 text-2xl font-bold sm:text-3xl xl:text-4xl text-shadow">
+			<h1 className="px-4 mb-2 text-xl font-bold sm:text-2xl lg:text-3xl xl:text-4xl text-shadow">
 				{title}
 			</h1>
-			<p className="text-base text-indigo-100 xl:text-lg">{subtitle}</p>
+			<p className="px-4 text-sm text-indigo-200 sm:text-base xl:text-lg">
+				{subtitle}
+			</p>
 		</header>
 	);
 }
