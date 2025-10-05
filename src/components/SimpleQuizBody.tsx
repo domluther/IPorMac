@@ -151,10 +151,14 @@ export function SimpleQuizBody<TQuestion>({
 	return (
 		<div className="mx-auto space-y-6">
 			{/* Main Quiz Section */}
-			<div className="p-6 border-l-4 border-green-500 rounded-lg bg-gray-50">
-				<h2 className="mb-4 text-xl font-semibold text-gray-800">{title}</h2>
+			<div className="p-6 border-l-4 rounded-lg bg-card/80 border-quiz-body-border">
+				<h2 className="mb-4 text-xl font-semibold text-quiz-body-title">
+					{title}
+				</h2>
 
-				{instructions && <p className="mb-4 text-gray-600">{instructions}</p>}
+				{instructions && (
+					<p className="mb-4 text-quiz-body-text">{instructions}</p>
+				)}
 
 				{/* Question Display */}
 				{currentQuestion && (
@@ -206,9 +210,9 @@ export function SimpleQuizBody<TQuestion>({
 
 				{/* Streak Display */}
 				{showStreakEmojis && (
-					<div className="max-w-md p-3 m-auto my-6 text-lg font-semibold text-center text-gray-700 bg-gray-100 border-2 border-gray-200 rounded-lg">
+					<div className="max-w-md p-3 m-auto my-6 text-lg font-semibold text-center rounded-lg border-2 text-streak-text bg-streak-bg border-streak-border">
 						Streak:{" "}
-						<span className="text-yellow-600">
+						<span className="text-streak-emoji">
 							{scoreManager.formatStreakEmojis(streak)}
 						</span>{" "}
 						({streak})
@@ -223,8 +227,8 @@ export function SimpleQuizBody<TQuestion>({
 						p-5 rounded-lg mb-6 text-center font-semibold
 						${
 							feedback.isCorrect
-								? "bg-green-100 text-green-900 border border-green-300"
-								: "bg-red-100 text-red-900 border border-red-300"
+								? "bg-feedback-success-bg text-feedback-success-text border border-stats-accuracy-high"
+								: "bg-feedback-error-bg text-feedback-error-text border border-stats-accuracy-low"
 						}
 					`}
 						>
@@ -241,20 +245,8 @@ export function SimpleQuizBody<TQuestion>({
 						</div>
 					</>
 				)}
-			</div>
 
-			{/* Optional Help Section */}
-			{helpSection}
-
-			{/* Keyboard Shortcuts Info */}
-			<div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-				<div className="space-y-1 text-sm text-gray-600">
-					<p>
-						<strong>Keyboard Shortcuts:</strong>
-					</p>
-					<p>• Press 1-{answers.length} to select answers</p>
-					<p>• Press Enter or Space for next question</p>
-				</div>
+				{helpSection}
 			</div>
 		</div>
 	);

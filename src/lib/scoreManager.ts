@@ -163,7 +163,7 @@ export class ScoreManager {
 		totalCorrect: number;
 		accuracy: number;
 		totalPoints: number;
-		level: LevelInfo;
+		currentLevel: LevelInfo;
 		progress: number;
 		nextLevel: LevelInfo | null;
 		streak: number;
@@ -211,7 +211,7 @@ export class ScoreManager {
 			totalCorrect,
 			accuracy,
 			totalPoints,
-			level: currentLevel,
+			currentLevel: currentLevel,
 			progress,
 			nextLevel,
 			streak,

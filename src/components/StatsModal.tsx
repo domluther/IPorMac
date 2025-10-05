@@ -60,7 +60,7 @@ export function StatsModal({
 
 	return (
 		<div
-			className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-xs"
+			className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-modal-overlay backdrop-blur-xs"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby={titleId}
@@ -73,13 +73,13 @@ export function StatsModal({
 			tabIndex={-1}
 		>
 			<div
-				className="bg-white rounded-lg shadow-xl max-w-xl w-full max-h-[80vh] overflow-hidden"
+				className="bg-background rounded-lg shadow-xl max-w-xl w-full max-h-[80vh] overflow-hidden"
 				onClick={(e) => e.stopPropagation()}
 				onKeyDown={(e) => e.stopPropagation()}
 				role="document"
 			>
 				{/* Header */}
-				<div className="flex items-center justify-between px-6 py-4 text-white bg-gradient-to-r from-gray-700 to-gray-900">
+				<div className="flex items-center justify-between px-6 py-4 text-modal-header-text bg-header/80">
 					<h2
 						id={titleId}
 						className="flex items-center text-2xl font-bold gap-2"
@@ -89,35 +89,35 @@ export function StatsModal({
 					<button
 						type="button"
 						onClick={onClose}
-						className="flex items-center justify-center w-8 h-8 text-2xl text-white hover:text-gray-200 transition-colors"
+						className="flex items-center justify-center w-8 h-8 text-2xl transition-colors hover:opacity-80"
 					>
 						<X className="w-6 h-6" />
 					</button>
 				</div>
 
 				{/* Content */}
-				<div className="p-6 overflow-y-auto max-h-[calc(80vh-140px)]">
+				<div className="p-4 overflow-y-auto max-h-[calc(80vh-140px)]">
 					{overallStats.totalAttempts > 0 ? (
-						<div className="space-y-6 ">
+						<div className="space-y-4">
 							{/* Level Info Card */}
-							<Card className="text-white bg-indigo-600">
-								<CardHeader className="text-white ">
+							<Card className="text-level-card-text bg-level-card-bg">
+								<CardHeader className="text-level-card-text">
 									<div className="flex items-center gap-4">
 										<div className="text-5xl animate-gentle-bounce">
-											{overallStats.level.emoji}
+											{overallStats.currentLevel.emoji}
 										</div>
 										<div className="flex-1 text-left">
-											<CardTitle className="text-2xl text-indigo-50">
-												{overallStats.level.title}
+											<CardTitle className="text-2xl">
+												{overallStats.currentLevel.title}
 											</CardTitle>
-											<p className="mt-1 text-indigo-100">
-												{overallStats.level.description}
+											<p className="mt-1 opacity-90">
+												{overallStats.currentLevel.description}
 											</p>
 										</div>
 									</div>
 								</CardHeader>
 								{overallStats.nextLevel && (
-									<CardContent className="p-4 mx-4 rounded-md bg-white/20">
+									<CardContent className="p-4 mx-4 rounded-md bg-card/20">
 										<div className="flex items-center justify-between mb-2 text-sm font-semibold">
 											<span>
 												Progress to {overallStats.nextLevel.emoji}{" "}
@@ -134,10 +134,10 @@ export function StatsModal({
 										</div>
 										<Progress
 											value={overallStats.progress}
-											className="h-2 mb-3 [&>div]:bg-green-600 "
+											className="h-2 mb-3 [&>div]:bg-progress-bar"
 										/>
 										{/* Detailed requirements */}
-										<div className="space-y-1 text-sm text-white">
+										<div className="text-sm space-y-1">
 											{overallStats.accuracy <
 												overallStats.nextLevel.minAccuracy && (
 												<div>
@@ -152,7 +152,7 @@ export function StatsModal({
 								{!overallStats.nextLevel && (
 									<CardContent className="pt-4">
 										<div className="text-center">
-											<div className="p-3 text-white rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-600">
+											<div className="p-3 text-white bg-yellow-500 rounded-lg">
 												<p className="text-lg font-semibold">
 													🎉 Maximum Level Reached!
 												</p>
@@ -174,25 +174,29 @@ export function StatsModal({
 								</CardHeader>
 								<CardContent className="px-2">
 									<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-										<div className="p-4 text-center border-l-4 border-green-500 rounded-lg bg-green-50">
-											<div className="text-2xl font-bold text-green-600">
+										<div className="p-4 text-center border-l-4 rounded-lg bg-stats-card-bg border-stats-accuracy-high">
+											<div className="text-2xl font-bold text-stats-accuracy-high">
 												{overallStats.totalCorrect}
 											</div>
-											<div className="text-sm text-gray-600">Correct</div>
+											<div className="text-sm text-muted-foreground">
+												Correct
+											</div>
 										</div>
-										<div className="p-4 text-center border-l-4 border-blue-500 rounded-lg bg-blue-50">
-											<div className="text-2xl font-bold text-blue-600">
+										<div className="p-4 text-center border-l-4 rounded-lg bg-stats-card-bg border-stats-points">
+											<div className="text-2xl font-bold text-stats-points">
 												{overallStats.totalAttempts}
 											</div>
-											<div className="text-sm text-gray-600">
-												Total Attempts
+											<div className="text-sm text-muted-foreground">
+												Attempts
 											</div>
 										</div>
-										<div className="p-4 text-center border-l-4 border-purple-500 rounded-lg bg-purple-50">
-											<div className="text-2xl font-bold text-purple-600">
+										<div className="p-4 text-center border-l-4 rounded-lg bg-stats-card-bg border-stats-record">
+											<div className="text-2xl font-bold text-stats-record">
 												{Math.floor(overallStats.accuracy)}%
 											</div>
-											<div className="text-sm text-gray-600">Accuracy</div>
+											<div className="text-sm text-muted-foreground">
+												Accuracy
+											</div>
 										</div>
 									</div>
 								</CardContent>
@@ -208,17 +212,17 @@ export function StatsModal({
 								<CardContent className="px-2">
 									<div className="space-y-4">
 										{Object.entries(typeStats).map(
-											([type, stats]) =>
+											([mode, stats]) =>
 												stats.attempts > 0 && (
 													<div
-														key={type}
-													className="flex items-center justify-between p-4 bg-gray-100 rounded-lg"
+														key={mode}
+														className="flex items-center justify-between p-4 rounded-lg bg-muted"
 													>
 														<div>
 															<div className="text-lg font-semibold">
-																{type === "none" ? "Invalid Items" : type}
+																{mode === "none" ? "Invalid Items" : mode}
 															</div>
-															<div className="text-sm text-gray-600">
+															<div className="text-sm text-muted-foreground">
 																{stats.correct} correct out of {stats.attempts}{" "}
 																attempts
 															</div>
@@ -228,15 +232,15 @@ export function StatsModal({
 																className={cn(
 																	"text-2xl font-bold",
 																	stats.accuracy >= 80
-																		? "text-green-600"
+																		? "text-stats-accuracy-high"
 																		: stats.accuracy >= 60
-																			? "text-yellow-600"
-																			: "text-red-600",
+																			? "text-stats-accuracy-medium"
+																			: "text-stats-accuracy-low",
 																)}
 															>
 																{Math.round(stats.accuracy)}%
 															</div>
-															<div className="text-xs text-gray-500">
+															<div className="text-xs text-muted-foreground">
 																accuracy
 															</div>
 														</div>
@@ -250,10 +254,10 @@ export function StatsModal({
 					) : (
 						<div className="py-12 text-center">
 							<div className="mb-4 text-6xl">🦆</div>
-							<p className="mb-2 text-xl text-gray-600">
+							<p className="mb-2 text-xl text-shadow-muted-foreground">
 								No scores recorded yet
 							</p>
-							<p className="text-gray-500">
+							<p className="text-muted-foreground">
 								Start practicing to see your progress!
 							</p>
 						</div>
@@ -261,7 +265,7 @@ export function StatsModal({
 				</div>
 
 				{/* Footer */}
-				<div className="flex items-center justify-between p-4 bg-indigo-50">
+				<div className="flex items-center justify-between p-4">
 					<Button variant="destructive" onClick={handleResetScores}>
 						Reset All Scores
 					</Button>

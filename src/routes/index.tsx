@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { QuizLayout, SimpleQuizBody } from "@/components";
-import { HintPanel } from "@/components/HintPanel";
 import { ScoreButton } from "@/components/ScoreButton";
 import { StatsModal } from "@/components/StatsModal";
 import { useQuizLogic } from "@/hooks/useQuizLogic";
@@ -88,11 +87,11 @@ function Index() {
 
 	/**
 	 * Renders a network address question with distinctive styling
-	 * Uses monospace font and gradient background for address visibility
+	 * Uses monospace font and semantic color variables for address visibility
 	 */
 	const questionRenderer = useCallback(
 		(question: NetworkAddressQuestion) => (
-			<div className="p-6 font-mono text-2xl font-semibold tracking-wider text-center text-white break-all border-indigo-600 shadow-lg sm:text-3xl sm:p-8 bg-gradient-to-br from-indigo-500 via-purple-600 to-purple-700 rounded-xl border-3">
+			<div className="p-6 font-mono text-2xl font-semibold tracking-wider text-center break-all shadow-lg sm:text-3xl sm:p-8 rounded-xl border-3 bg-question-prompt-bg text-question-prompt-text border-hint-card-border">
 				{question.address}
 			</div>
 		),
@@ -159,9 +158,52 @@ function Index() {
 		generateNewQuestion();
 	}, [generateNewQuestion]);
 
+	// Generate hint content from siteConfig.hints
+	const getHintContent = useCallback(() => {
+		const hints = siteConfig.hints || [];
+		return (
+			<div className="space-y-3">
+				{hints.map((hint) => (
+					<div
+						key={hint.title}
+						className="p-3 border-l-4 rounded-lg bg-hint-card-bg border-hint-card-border shadow-sm"
+					>
+						<div className="mb-1 font-bold text-hint-card-title">
+							{hint.title}
+						</div>
+						<div className="mb-2 text-hint-card-text">{hint.description}</div>
+						<div className="space-y-1">
+							{hint.examples.map((example) => (
+								<div
+									key={example}
+									className="px-2 py-1 font-mono text-sm rounded text-hint-card-code-text bg-hint-card-code-bg"
+								>
+									{example}
+								</div>
+							))}
+						</div>
+					</div>
+				))}
+			</div>
+		);
+	}, [siteConfig.hints]);
+
 	// Help section with toggleable address format reference
 	const helpSection = (
-		<HintPanel title="📝 Address Format Rules" items={siteConfig.hints || []} />
+		<details className="group">
+			<summary className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-button-primary focus:ring-offset-2 rounded-lg px-4 py-3 bg-hint-summary-bg border border-hint-summary-border hover:bg-hint-summary-bg-hover transition-all duration-200 shadow-sm hover:shadow-md list-none [&::-webkit-details-marker]:hidden">
+				<span className="flex items-center font-semibold text-hint-summary-text">
+					<span className="mr-2 text-lg">💡</span>
+					Get help with this question
+					<span className="ml-auto transition-transform duration-200 group-open:rotate-180">
+						▼
+					</span>
+				</span>
+			</summary>
+			<div className="p-5 mt-3 border rounded-lg border-hint-summary-border shadow-sm bg-hint-content-bg">
+				<div className="text-base">{getHintContent()}</div>
+			</div>
+		</details>
 	);
 
 	return (
@@ -171,8 +213,8 @@ function Index() {
 			titleIcon={siteConfig.icon}
 			scoreButton={
 				<ScoreButton
-					levelEmoji={overallStats.level.emoji}
-					levelTitle={overallStats.level.title}
+					levelEmoji={overallStats.currentLevel.emoji}
+					levelTitle={overallStats.currentLevel.title}
 					points={overallStats.totalPoints}
 					onClick={() => setShowStatsModal(true)}
 				/>

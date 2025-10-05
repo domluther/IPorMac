@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
-import { SiteNavigation } from "@/components/SiteNavigation";
 import {
 	detectCurrentSite,
 	GCSE_NAVIGATION_MENU,
 } from "@/lib/navigationConfig";
+import { SiteNavigation } from "./SiteNavigation";
 
 interface HeaderProps {
 	scoreButton?: ReactNode;
@@ -16,7 +16,7 @@ export function Header({ scoreButton, title, subtitle }: HeaderProps) {
 	const currentSiteId = detectCurrentSite();
 
 	return (
-		<header className="relative p-4 text-center text-indigo-50 sm:p-6 bg-header/80">
+		<header className="relative p-4 text-center text-header-text sm:p-6 bg-header/80">
 			<SiteNavigation
 				menuItems={GCSE_NAVIGATION_MENU}
 				currentSiteId={currentSiteId}
@@ -31,7 +31,7 @@ export function Header({ scoreButton, title, subtitle }: HeaderProps) {
 			<h1 className="px-4 mb-2 text-xl font-bold sm:text-2xl lg:text-3xl xl:text-4xl text-shadow">
 				{title}
 			</h1>
-			<p className="px-4 text-sm text-indigo-200 sm:text-base xl:text-lg">
+			<p className="px-4 text-sm text-header-subtitle sm:text-base xl:text-lg">
 				{subtitle}
 			</p>
 		</header>
