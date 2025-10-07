@@ -50,6 +50,9 @@ function Index() {
 	const [currentQuestion, setCurrentQuestion] =
 		useState<NetworkAddressQuestion | null>(null);
 	const [showStatsModal, setShowStatsModal] = useState(false);
+	// Score update trigger to force re-renders when score changes
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const [_scoreUpdateTrigger, setScoreUpdateTrigger] = useState(0);
 
 	// Quiz state management using reusable hook
 	const quizLogic = useQuizLogic({
@@ -238,6 +241,7 @@ function Index() {
 				onClose={() => setShowStatsModal(false)}
 				scoreManager={scoreManager}
 				title="Your Network Mastery"
+				onStatsUpdate={() => setScoreUpdateTrigger((prev) => prev + 1)}
 			/>
 		</QuizLayout>
 	);

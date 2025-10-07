@@ -12,6 +12,8 @@ interface StatsModalProps {
 	scoreManager: ScoreManager;
 	/** Title for the modal */
 	title: string;
+	/** Callback to trigger UI updates after score changes */
+	onStatsUpdate?: () => void;
 }
 
 /**
@@ -23,6 +25,7 @@ export function StatsModal({
 	onClose,
 	scoreManager,
 	title,
+	onStatsUpdate,
 }: StatsModalProps) {
 	const titleId = useId();
 	const headerIcon = "🏆";
@@ -54,7 +57,7 @@ export function StatsModal({
 			)
 		) {
 			scoreManager.resetAllScores();
-			window.location.reload(); // Refresh to update all displays
+			onStatsUpdate?.(); // Trigger UI update instead of full page reload
 		}
 	};
 
