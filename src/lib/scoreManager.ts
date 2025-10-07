@@ -19,6 +19,17 @@ export interface ScoreData {
 	streak: number;
 }
 
+export interface OverallStats {
+	accuracy: number;
+	totalPoints: number;
+	totalAttempts: number;
+	totalCorrect: number;
+	currentLevel: LevelInfo;
+	progress: number;
+	nextLevel: LevelInfo | null;
+	streak: number;
+}
+
 const blankScoreData = {
 	attempts: 0,
 	correct: 0,
@@ -158,16 +169,7 @@ export class ScoreManager {
 		this.saveScores();
 	}
 
-	getOverallStats(): {
-		totalAttempts: number;
-		totalCorrect: number;
-		accuracy: number;
-		totalPoints: number;
-		currentLevel: LevelInfo;
-		progress: number;
-		nextLevel: LevelInfo | null;
-		streak: number;
-	} {
+	getOverallStats(): OverallStats {
 		const totalAttempts = this.scores.attempts;
 		const totalCorrect = this.scores.correct;
 		const streak = this.scores.streak;

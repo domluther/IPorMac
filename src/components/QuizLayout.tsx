@@ -33,7 +33,7 @@ export function QuizLayout({
 				subtitle={subtitle}
 			/>
 			<main className="p-6 bg-muted">
-				<div className="mx-auto max-w-4xl">{children}</div>
+				<div className="max-w-4xl mx-auto">{children}</div>
 			</main>
 		</>
 	);

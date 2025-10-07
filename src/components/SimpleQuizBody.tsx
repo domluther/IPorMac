@@ -167,7 +167,7 @@ export function SimpleQuizBody<TQuestion>({
 
 				{/* Answer Options */}
 				{currentQuestion && (
-					<div className="grid grid-cols-2 gap-4 mb-6">
+					<div className="mb-6 grid grid-cols-2 gap-4">
 						{answers.map((answer) => {
 							const isSelected = feedback && selectedAnswerId === answer.id;
 							const isCorrect = currentQuestion
@@ -210,7 +210,7 @@ export function SimpleQuizBody<TQuestion>({
 
 				{/* Streak Display */}
 				{showStreakEmojis && (
-					<div className="max-w-md p-3 m-auto my-6 text-lg font-semibold text-center rounded-lg border-2 text-streak-text bg-streak-bg border-streak-border">
+					<div className="max-w-md p-3 m-auto my-6 text-lg font-semibold text-center border-2 rounded-lg text-streak-text bg-streak-bg border-streak-border">
 						Streak:{" "}
 						<span className="text-streak-emoji">
 							{scoreManager.formatStreakEmojis(streak)}

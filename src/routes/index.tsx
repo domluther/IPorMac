@@ -166,7 +166,7 @@ function Index() {
 				{hints.map((hint) => (
 					<div
 						key={hint.title}
-						className="p-3 border-l-4 rounded-lg bg-hint-card-bg border-hint-card-border shadow-sm"
+						className="p-3 border-l-4 rounded-lg shadow-sm bg-hint-card-bg border-hint-card-border"
 					>
 						<div className="mb-1 font-bold text-hint-card-title">
 							{hint.title}
@@ -200,7 +200,7 @@ function Index() {
 					</span>
 				</span>
 			</summary>
-			<div className="p-5 mt-3 border rounded-lg border-hint-summary-border shadow-sm bg-hint-content-bg">
+			<div className="p-5 mt-3 border rounded-lg shadow-sm border-hint-summary-border bg-hint-content-bg">
 				<div className="text-base">{getHintContent()}</div>
 			</div>
 		</details>
